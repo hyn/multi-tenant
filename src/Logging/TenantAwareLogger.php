@@ -32,9 +32,11 @@ class TenantAwareLogger
         $log = new Logger('tenant');
         $level = $log->toMonologLevel($config['level'] ?: 'debug');
         $tenantDirectory = app(Directory::class);
-        $directoryPath = $tenantDirectory->getWebsite() ? 'app/tenancy/tenants/' . $tenantDirectory->path() : null;
+        $tenantDisk = config('tenancy.website.disk') ?: 'tenancy-default';
+        $directoryPath = $tenantDirectory->getWebsite() ?
+            config('filesystems.disks.' . $tenantDisk . '.root') . '/' . $tenantDirectory->path() : null;
 
-        $logPath = storage_path($directoryPath . 'logs/' . $config['level'] . '_' . Carbon::now()->toDateString() . '.log');
+        $logPath = $directoryPath . 'logs/' . $config['level'] . '_' . Carbon::now()->toDateString() . '.log';
         $log->pushHandler(new StreamHandler($logPath, $level, false));
 
         return $log;

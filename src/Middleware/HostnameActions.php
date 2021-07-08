@@ -68,8 +68,12 @@ class HostnameActions
             if (!$request->secure() && $hostname->force_https) {
                 return $this->secure($hostname, $request);
             }
-        } else {
-            $this->abort($request);
+        } 
+        
+        else {
+            if ($request->getHttpHost() !== config('tenancy.hostname.default')) {
+                $this->abort($request);
+            }
         }
 
         return $next($request);

@@ -129,6 +129,10 @@ class PostgreSQL implements DatabaseGenerator
 
     protected function dropPriviliges(IlluminateConnection $connection, array $config)
     {
+        if (config("tenancy.db.tenant-division-mode") === Connection::DIVISION_MODE_SEPARATE_SCHEMA) {
+            return true;
+        }
+
         if ($this->userExists($connection, $config['username'])) {
             return $connection->statement("DROP OWNED BY \"{$config['username']}\"");
         }
